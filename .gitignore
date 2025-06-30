@@ -1,0 +1,32 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build output
+dist/
+build/
+.next/
+
+# Env files
+.env
+client/.env
+server/.env
+
+# Runtime files
+*.pid
+*.seed
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS junk
+.DS_Store
+Thumbs.db
