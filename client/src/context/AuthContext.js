@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  /* wrapped in useCallback so it stays the same function reference */
   const syncUser = useCallback(async () => {
     setLoading(true);
     try {
@@ -21,7 +20,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    syncUser();               // run once on mount
+    syncUser();             
   }, [syncUser]);
 
   const handleLogout = async () => {
@@ -31,7 +30,6 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  /* ✅  syncUser is included in the value  */
   return (
     <AuthContext.Provider
       value={{ user, setUser, loading, syncUser, handleLogout }}

@@ -4,7 +4,7 @@ import { login, register } from "../lib/auth";
 import { AuthContext } from "../context/AuthContext";
 
 export default function AuthForm() {
-  const { syncUser } = useContext(AuthContext);   //  ✅ only what we need
+  const { syncUser } = useContext(AuthContext);  
   const [isLogin, setIsLogin] = useState(true);
   const [form, setForm] = useState({
     name: "",
@@ -34,13 +34,15 @@ export default function AuthForm() {
         data = (await login(form)).data;
       } else {
         await register(form);
-        data = (await login(form)).data;  // auto-login
+        data = (await login(form)).data;  
       }
       storeToken(data.token, form.remember);
-      await syncUser();                   // ✅ now defined
+      await syncUser();                  
     } catch (err) {
-      setError(err?.response?.data?.message || "Something went wrong");
-      console.error("Auth error:", err?.response?.data || err.message);
+      console.error("❌ FULL ERROR OBJECT:", err);
+      const fallback=err?.response?.data?.message || err?.response?.statusText || err?.message || "Something went wrong";
+      console.error("Auth error:",fallback)
+      setError(fallback);
     }
   };
 
@@ -49,13 +51,13 @@ export default function AuthForm() {
       onSubmit={handleSubmit}
       className="max-w-sm w-full p-6 bg-white shadow rounded-xl space-y-4"
     >
-      <h2 className="text-2xl font-semibold text-center">
+      <h2 className="text-2xl font-semibold text-center text-black">
         {isLogin ? "Login" : "Register"}
       </h2>
 
       {!isLogin && (
         <input
-          className="input w-full border p-2 rounded"
+          className="input w-full border p-2 rounded text-black"
           placeholder="Name"
           name="name"
           value={form.name}
@@ -65,7 +67,7 @@ export default function AuthForm() {
       )}
 
       <input
-        className="input w-full border p-2 rounded"
+        className="input w-full border p-2 rounded text-black"
         placeholder="Email"
         type="email"
         name="email"
@@ -75,7 +77,7 @@ export default function AuthForm() {
       />
 
       <input
-        className="input w-full border p-2 rounded"
+        className="input w-full border p-2 rounded text-black"
         type="password"
         placeholder="Password"
         name="password"
@@ -85,7 +87,7 @@ export default function AuthForm() {
       />
 
       {isLogin && (
-        <label className="flex items-center space-x-2 text-sm">
+        <label className="flex items-center space-x-2 text-sm text-black">
           <input
             type="checkbox"
             name="remember"
@@ -96,6 +98,19 @@ export default function AuthForm() {
         </label>
       )}
 
+      {!isLogin && (
+        <select
+          name="role"
+          value={form.role}
+          onChange={handleChange}
+          className="input w-full border p-2 rounded text-black"
+        >
+          <option value="user">User</option>
+          <option value="admin">Request Admin</option>
+        </select>
+      )}
+
+
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <button
@@ -105,7 +120,7 @@ export default function AuthForm() {
         {isLogin ? "Login" : "Register"}
       </button>
 
-      <p className="text-center text-sm">
+      <p className="text-center text-sm text-black">
         {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
         <button
           type="button"

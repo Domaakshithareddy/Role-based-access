@@ -9,8 +9,7 @@ export default function Home() {
   const router=useRouter();
   useEffect(()=>{
     if (!loading && user){
-      if (user.role==='admin') router.replace("/admin/dashboard");
-      else router.replace("/user/dashboard");
+      router.replace('/dashboard');
     }
   },[user,loading,router]);
   return (
