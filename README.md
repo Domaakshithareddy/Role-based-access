@@ -80,9 +80,3 @@ Example flow:
 - **Backend**: Node.js, Express.js, MongoDB, Mongoose
 - **Authentication**: JWT (JSON Web Token)
 - **Email**: Nodemailer with Gmail App Password
-
----
-
-## License
-
-This project is open for educational and development purposes.
