@@ -1,18 +1,46 @@
 "use client";
+import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
+import { getCourses } from "../../services/courseService";
+import CourseCard from "../../components/CourseCard";
 import Navbar from "../../components/Navbar";
 
 export default function UserDashboard(){
-    const {user,loading}=useAuth();
-    if (loading) return <p>Loading...</p>;
+    const {user,loading:authLoading}=useAuth();
+    const [courses,setCourses]=useState([]);
+    const [loading,setLoading]=useState(true);
+    useEffect(()=>{
+        const load=async ()=>{
+            try{
+                const res=await getCourses();
+                setCourses(res.data);
+            }
+            catch (err){
+                console.error('fetch courses error:',err?.response?.data || err);
+            }
+            finally{
+                setLoading(false);
+            }
+        };
+        load();
+    },[]);
+    if (authLoading || loading) return <p className="p-6">Loading...</p>;
     if (!user) return null;
     return (
         <>
             <Navbar />
-            <section className="p-8">
-                <h1 className="text-3xl font-bold">Dashboard</h1>
-                <p className="mt-4">Hello {user.name},welcome back!</p>
-                <p className="mt-2">Your role is: <strong>{user.role}</strong></p>
+            <section className="p-6">
+                <h1 className="text-3xl font-bold mb-6">Available Courses</h1>
+
+                {courses.length === 0 ? (
+                    <p>No courses added yet.</p>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {courses.map((course) => (
+                        <CourseCard key={course._id} course={course} />
+                    ))}
+                    </div>
+                )}
             </section>
         </>
     )
