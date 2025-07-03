@@ -1,5 +1,4 @@
 require('dotenv').config();
-console.log('JWT secret in memory 👉', process.env.JWT_TOKEN);
 const express=require('express');
 const cookieParser=require('cookie-parser');
 const cors=require('cors');
@@ -7,6 +6,7 @@ const connectDB=require('./config/db');
 const authRoutes=require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRoutes');
+const courseRoutes = require('./routes/courseRoutes');
 
 const app=express();
 const PORT=process.env.PORT || 4000;
@@ -20,5 +20,6 @@ app.use(cookieParser());
 app.use('/api/auth',authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/courses', courseRoutes);
 
 app.listen(PORT,()=>console.log(`Server running on port ${PORT}`))
