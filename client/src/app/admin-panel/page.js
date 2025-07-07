@@ -33,7 +33,7 @@ const AddCoursePage=()=>{
     return (
         <>
             <Navbar />
-            <div className="max-w-3xl mx-auto p-6 bg-blue-200">
+            <div className="max-w-3xl mx-auto p-6 bg-[#f87b72]">
                 <h1 className="text-2xl font-bold mb-4 text-black text-center">Add New Course</h1>
                 <CourseForm onSubmit={handleSubmit} />
             </div>
