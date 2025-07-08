@@ -6,4 +6,6 @@ const userCtl = require('../controllers/userController');
 
 router.get('/dashboard',verifyToken,allowRoles('user','admin'),userCtl.dashboard);
 
+router.post('/request-admin', verifyToken, allowRoles('user'), userCtl.requestAdminAccess);
+
 module.exports=router;
