@@ -9,7 +9,9 @@ This project implements a full-stack web application featuring secure user authe
 ### `client/` (Frontend - Next.js)
 
 * **Framework**: Built using Next.js (React-based).
-* **Purpose**: Handles the UI for user registration, login, dashboard view, and course management.
+
+* **Purpose**: Handles the UI for user registration, login, dashboard view, course management, and Super Admin actions.
+
 * **Routing**:
 
   * `/register`: New user registration
@@ -17,30 +19,41 @@ This project implements a full-stack web application featuring secure user authe
   * `/dashboard`: Displays all available courses
   * `/dashboard/[courseId]`: Displays detailed view of a selected course, including modules and lessons
   * `/admin-panel`: Admin-only route to add and manage courses
-* **API Communication**: Uses Axios to call backend APIs such as register, login, fetch courses, and post new courses.
+  * `/super-admin/requests`: Super Admin-only page to view and approve/reject pending admin requests
+
+* **API Communication**: Uses Axios to call backend APIs such as register, login, request admin, fetch courses, approve/reject admin users, etc.
+
+* **Role-Based Navigation**: Navbar dynamically shows links like “Admin Controls” and “Pending Requests” based on the logged-in user's role (`user`, `admin`, `superAdmin`).
+
+---
 
 ### `server/` (Backend - Node.js + Express)
 
 * **controllers/**
 
-  * `authController`: Handles user registration, login, logout, and sending admin request emails.
+  * `authController`: Handles user registration, login, logout, and sends admin access requests if requested at registration.
+  * `userController`: Adds support for dashboard access and requesting admin access after registration.
+  * `superAdminController`: Handles viewing all pending admin access requests and approving or rejecting them.
   * `courseController`: Contains logic for creating and retrieving courses and their modules.
 
 * **routes/**
 
-  * `authRoutes`: Contains routes for registration, login, and admin requests.
+  * `authRoutes`: Contains routes for registration, login, logout, and token validation.
+  * `userRoutes`: Authenticated routes for dashboard view and sending admin access request post-registration.
+  * `adminRoutes`: Protected endpoints for course management available to both `admin` and `superAdmin`.
+  * `superAdminRoutes`: Routes to view, approve, or reject admin access requests (only for `superAdmin` users).
   * `courseRoutes`: Defines endpoints for creating, retrieving, and viewing individual course data.
 
 * **models/**
 
-  * `User`: Mongoose schema for storing user credentials and roles (user/admin).
+  * `User`: Mongoose schema for storing user credentials and roles (`user`, `admin`, `superAdmin`) along with `adminRequestStatus` field (pending, rejected, none).
   * `Course`: Mongoose schema for storing course details including modules, subtopics, and lessons.
 
 * **utils/**
 
-  * `token`: Functions for generating JWTs and setting cookies.
+  * `token`: Functions for generating JWTs and setting secure cookies.
   * `mailer`: Configures Nodemailer for sending emails using Gmail.
-  * `sendAdminRequestMail`: Sends an approval request to the admin when a user requests admin access.
+  * `sendAdminRequestMail`: Sends an approval request to the Super Admin when a user requests admin access.
 
 * **.env**
 
@@ -50,7 +63,7 @@ This project implements a full-stack web application featuring secure user authe
     * MongoDB URI
     * JWT secret
     * Client origin
-    * Admin email address
+    * Super Admin email address
 
 * **server.js**
 
@@ -64,19 +77,20 @@ The frontend (Next.js) communicates with the backend via RESTful APIs. All prote
 
 ### Sample Workflow:
 
-1. A user fills out the registration form and submits it.
-2. The frontend sends a POST request to the backend with the form data.
-3. The backend registers the user and optionally sends a request to the admin for approval (if the user selects admin role).
-4. On login, a JWT token is issued and stored in a secure cookie.
-5. The user is redirected to the dashboard where they can browse available courses.
-6. Clicking a course shows its modules, and clicking a module reveals the lessons.
+1. A user registers and optionally selects **"Request Admin"** from a dropdown.
+2. The backend creates a user with role `"user"` and status `"pending"` for admin access (if requested).
+3. An email is sent to the Super Admin.
+4. Super Admin logs in and visits `/super-admin/requests` to approve or reject pending admin requests.
+5. Once approved, the user's role is upgraded to `admin`. If rejected, the status is set to `"rejected"` and they are excluded from future requests.
+6. Admin users can now access `/admin-panel` to manage courses.
 
 ---
 
 ## Features
 
-* Role-based authentication system (admin and regular user)
-* Admin approval request via email notification
+* Role-based authentication system (`user`, `admin`, `superAdmin`)
+* Admin approval request at registration or post-registration
+* Super Admin-only control panel to approve/reject admin requests
 * JWT authentication with secure cookies
 * Dynamic course creation with modules, lessons, and subtopics
 * Nested course structure view with module-level expansion
@@ -88,11 +102,11 @@ The frontend (Next.js) communicates with the backend via RESTful APIs. All prote
 
 ## Setup Instructions
 
-1. Install all dependencies in both the client and server directories.
-2. Set up your `.env` file in the server folder with MongoDB URI, Gmail credentials, and other secrets.
-3. Start the backend server to enable API endpoints and MongoDB connection.
-4. Start the frontend client to serve the React-based interface.
-5. Use Postman or browser to test registration, login, and course management features.
+1. Install all dependencies in both the `client` and `server` directories.
+2. Set up your `.env` file in the `server/` folder with MongoDB URI, Gmail credentials, JWT secret, and Super Admin email.
+3. Start the backend server to enable MongoDB connection and APIs.
+4. Start the frontend client to serve the React-based UI.
+5. Use Postman or browser to test registration, login, course management, and Super Admin approval flows.
 
 ---
 
