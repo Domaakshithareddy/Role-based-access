@@ -12,7 +12,7 @@ const AddCoursePage=()=>{
     const {user,loading}=useAuth();
 
     useEffect(()=>{
-        if (!loading && (!user || user.role!=='admin')){
+        if (!loading && (!user || (user.role!=='admin' && user.role!=='superAdmin'))){
             router.replace('/dashboard');
         }
     },[user,loading,router]);
@@ -28,7 +28,7 @@ const AddCoursePage=()=>{
         }
     };
     if (loading) return <p>Loading...</p>;
-    if (!user || user.role!=='admin') return null;
+    if (!user || (user.role!=='admin' && user.role!=='superAdmin')) return null;
 
     return (
         <>
