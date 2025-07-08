@@ -12,6 +12,7 @@ export default function Navbar(){
                 <div className="space-x-4">
                     <Link href="/dashboard" className="text-blue-300">Dashboard</Link>
                     {user.role==="admin" && <Link href="/admin-panel">Admin Controls</Link>}
+                    {user.role==="superAdmin" && <Link href="/super-admin/requests">Pending Requests</Link>}
                     <button onClick={handleLogout} className="text-yellow-100">
                         Logout
                     </button>

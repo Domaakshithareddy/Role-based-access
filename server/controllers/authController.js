@@ -14,7 +14,8 @@ exports.register = async (req, res) => {
       name,
       email,
       password,         
-      role: 'user'     
+      role: 'user',     
+      adminRequestStatus: role === 'admin' ? 'pending' : 'none'
     });
 
     if (role === 'admin') {
