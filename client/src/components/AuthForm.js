@@ -11,8 +11,11 @@ export default function AuthForm() {
     email: "",
     password: "",
     remember: false,
+    role: "user",
   });
   const [error, setError] = useState(null);
+  const [showPendingPopup, setShowPendingPopup] = useState(false);
+  const [showRejectedPopup, setShowRejectedPopup] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -39,10 +42,17 @@ export default function AuthForm() {
       storeToken(data.token, form.remember);
       await syncUser();                  
     } catch (err) {
-      console.error("❌ FULL ERROR OBJECT:", err);
       const fallback=err?.response?.data?.message || err?.response?.statusText || err?.message || "Something went wrong";
-      console.error("Auth error:",fallback)
-      setError(fallback);
+      
+      const msg = fallback.toLowerCase();
+      if (msg.includes('pending')) {
+        setShowPendingPopup(true);
+      } else if (msg.includes('rejected')) {
+        setShowRejectedPopup(true);
+      } else {
+        setError(fallback);
+      }
+
     }
   };
 
@@ -111,7 +121,9 @@ export default function AuthForm() {
       )}
 
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && !error.toLowerCase().includes("pending") && (
+        <p className="text-red-500 text-sm">{error}</p>
+      )}
 
       <button
         type="submit"
@@ -130,6 +142,26 @@ export default function AuthForm() {
           {isLogin ? "Register" : "Login"}
         </button>
       </p>
+      {showPendingPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl relative w-[90%] max-w-md text-black">
+            <button className="absolute top-2 right-3 text-xl text-gray-500 hover:text-red-600" onClick={()=>setShowPendingPopup(false)}>&times;</button>
+            <h2 className="text-xl font-bold mb-2">Admin Approval Pending</h2>
+            <p>Your request to become admin is pending. You can login after approval by Super Admin.</p>
+          </div>
+        </div>
+      )}
+
+      {showRejectedPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl relative w-[90%] max-w-md text-black">
+            <button className="absolute top-2 right-3 text-xl text-gray-500 hover:text-red-600" onClick={() => setShowRejectedPopup(false)}>&times;</button>
+            <h2 className="text-xl font-bold mb-2">Admin Request Rejected</h2>
+            <p>Your request to become an admin was rejected. You are not allowed to log in.</p>
+          </div>
+        </div>
+      )}
+
     </form>
   );
 }

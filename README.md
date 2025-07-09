@@ -82,7 +82,8 @@ The frontend (Next.js) communicates with the backend via RESTful APIs. All prote
 3. An email is sent to the Super Admin.
 4. Super Admin logs in and visits `/super-admin/requests` to approve or reject pending admin requests.
 5. Once approved, the user's role is upgraded to `admin`. If rejected, the status is set to `"rejected"` and they are excluded from future requests.
-6. Admin users can now access `/admin-panel` to manage courses.
+6. Requested users can login only after the approval
+7. Admin users can now access `/admin-panel` to manage courses.
 
 ---
 

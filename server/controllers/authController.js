@@ -43,6 +43,14 @@ exports.login = async (req, res) => {
     const isValid = await user.comparePassword(password);  
     if (!isValid) return res.status(400).json({ message: 'Incorrect password' });
 
+    if (user.adminRequestStatus==='pending'){
+      return res.status(403).json({ message: 'Your request to become admin is pending. You can login after approval by Super Admin.' });
+    }
+
+    if (user.adminRequestStatus === 'rejected') {
+      return res.status(403).json({ message: 'Your request to become admin was rejected. You are not allowed to log in.' });
+    }
+
     const token = createToken(user);
     setTokenCookie(res, token, remember);
     res.json({ token, role: user.role, message: 'Logged in' });

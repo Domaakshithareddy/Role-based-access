@@ -25,6 +25,8 @@ const CourseForm=({onSubmit})=>{
         ],
     });
 
+    const [showConfirm, setShowConfirm] = useState(false);
+
     const handleCourseChange=(e)=>{
         setCourse({...course,[e.target.name]:e.target.value});
     };
@@ -69,6 +71,15 @@ const CourseForm=({onSubmit})=>{
         });
     };
 
+    const handleConfirmSubmit=()=>{
+        setShowConfirm(false);
+        onSubmit(course)
+    };
+
+    const handleCancel=()=>{
+        setShowConfirm(false);
+    };
+
     const addLesson=(mIdx)=>{
         const mods=[...course.modules];
         mods[mIdx].lessons.push({title:'',duration:'',completed:false});
@@ -101,12 +112,12 @@ const CourseForm=({onSubmit})=>{
 
     const submitHandler=(e)=>{
         e.preventDefault();
-        onSubmit(course);
+        setShowConfirm(true);
     };
 
     return (
         <form onSubmit={submitHandler} className="space-y-6 bg-white p-6 rounded-lg shadow max-w-3xl mx-auto">
-            <h1 className="text-2xl font-bold mb-4 text-black">Add New Course</h1>
+            <h1 className="text-2xl font-bold mb-4 text-black">New Course Details</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-black">
                 <input name="title" value={course.title || ""} onChange={handleCourseChange} placeholder="Course Title" className="input border p-2 rounded" />
                 <input name="imgSrc" value={course.imgSrc || ""} onChange={handleCourseChange} placeholder="Image Url/path" className="input border p-2 rounded" />
@@ -155,6 +166,18 @@ const CourseForm=({onSubmit})=>{
             <div className="flex gap-4">
                 <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded ml-4">Submit</button>
             </div>
+            {showConfirm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-80 text-black">
+                        <h2 className="text-xl font-semibold mb-4">Confirm Submission</h2>
+                        <p className="mb-6">Are you sure you want to submit this course?</p>
+                        <div className="flex justify-end gap-4">
+                            <button onClick={handleCancel} className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded">Cancel</button>
+                            <button onClick={handleConfirmSubmit} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </form>
     );
 };

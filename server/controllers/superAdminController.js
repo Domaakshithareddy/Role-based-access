@@ -1,8 +1,9 @@
 const User=require('../models/User');
+const sendApprovalStatusMail=require('../utils/sendApprovalStatusMail');
 
 exports.getPendingAdminRequests=async (req,res)=>{
     try{
-        const pendingUsers=await User.find({role:'user',adminRequestStatus: 'pending'}).select('-password');
+        const pendingUsers=await User.find({adminRequestStatus: 'pending'});
         res.status(200).json(pendingUsers);
     }
     catch (err){
@@ -14,12 +15,19 @@ exports.getPendingAdminRequests=async (req,res)=>{
 exports.approveAdminRequest=async (req,res) =>{
     try{
         const user=await User.findById(req.params.id);
-        if (!user || user.role !=='user'){
+        if (!user || user.adminRequestStatus !== 'pending'){
             return res.status(404).json({message: 'User not found or already an admin'});
         }
         user.role='admin';
         user.adminRequestStatus = 'approved';
         await user.save();
+
+        await sendApprovalStatusMail({
+            name:user.name,
+            email:user.email,
+            status:'approved'
+        });
+
         res.status(200).json({message: 'User promoted to admin'});
     }
     catch (err){
@@ -31,11 +39,18 @@ exports.approveAdminRequest=async (req,res) =>{
 exports.rejectAdminRequest=async (req,res)=>{
     try{
         const user=await User.findById(req.params.id);
-        if (!user || user.role!=='user'){
+        if (!user || user.adminRequestStatus !== 'pending'){
             return res.status(404).json({message: 'User not found or already an admin'});
         }
         user.adminRequestStatus='rejected';
         await user.save();
+
+        await sendApprovalStatusMail({
+            name:user.name,
+            email:user.email,
+            status:'rejected'
+        });
+
         res.status(200).json({message: 'Admin request rejected'});
     }
     catch (err){
