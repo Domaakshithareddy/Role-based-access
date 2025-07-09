@@ -62,10 +62,17 @@ exports.login = async (req, res) => {
 };
 
 exports.verify = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
   res.json({ valid: true, user: req.user });
 };
 
 exports.logout = (req, res) => {
-  clearTokenCookie(res);
-  res.json({ message: 'Logged out' });
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "Lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+  res.json({ message: "Logged out" });
 };
