@@ -11,7 +11,7 @@ export default function useAuth(requiredRole=null){
             if (!user){
                 router.replace("/");
             }
-            else if (requiredRole && user.role!==requiredRole){
+            else if (requiredRole && (Array.isArray(requiredRole) ? !requiredRole.includes(user.role) : user.role !== requiredRole)){
                 router.replace("/");
             }
         }
